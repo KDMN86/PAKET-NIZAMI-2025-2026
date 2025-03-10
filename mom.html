@@ -9,23 +9,25 @@
   <body>
     <header>
       <h1>Paket MOM</h1>
-      <p>Detail produk dari Paket MOM yang tersedia untuk Anda.</p>
+      <p>Detail produk:</p>
     </header>
-    <section class="product">
-      <div class="product-gallery">
-        <img src="image/mom/mom1.jpg" alt="mom 1" class="zoomable" />
-        <img src="image/mom/mom2.jpg" alt="mom 2" class="zoomable" />
-        <img src="image/mom/mom3.jpg" alt="mom 3" class="zoomable" />
-        <img src="image/mom/mom4.jpg" alt="mom 4" class="zoomable" />
-        <img src="image/mom/mom5.jpg" alt="mom 5" class="zoomable" />
-        <img src="image/mom/mom6.jpg" alt="mom 6" class="zoomable" />
-      </div>
-
-      <!-- Overlay untuk Preview -->
-      <div id="image-preview" class="preview-overlay">
-        <span class="close-btn">&times;</span>
-        <img id="preview-img" />
-      </div>
+    <img
+      src="image/lampu.png"
+      class="decorative-image decor-top-left"
+      alt="Hiasan Kiri Atas"
+    />
+    <img
+      src="image/lampu.png"
+      class="decorative-image decor-bottom-right"
+      alt="Hiasan Kanan Bawah"
+    />
+    <section class="full-screen-gallery">
+      <img src="image/mom/mom1.jpg" alt="mom 1" />
+      <img src="image/mom/mom2.jpg" alt="mom 2" />
+      <img src="image/mom/mom3.jpg" alt="mom 3" />
+      <img src="image/mom/mom4.jpg" alt="mom 4" />
+      <img src="image/mom/mom5.jpg" alt="mom 5" />
+      <img src="image/mom/mom6.jpg" alt="mom 6" />
     </section>
 
     <footer>
@@ -40,7 +42,9 @@
       Join Now
     </a>
 
-    <button id="back-button" class="back-button">⬅ Kembali</button>
+    <!-- <button id="back-button" class="back-button">⬅ Kembali</button> -->
+
+    <a href="javascript:history.back()" class="back-button">Kembali</a>
 
     <script src="script.js"></script>
   </body>
