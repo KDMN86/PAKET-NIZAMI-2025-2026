@@ -260,3 +260,112 @@ footer {
   background: #107541;
   transform: scale(1.5);
 }
+
+.owner-button {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  background: #074c28;
+  color: white;
+  text-align: center;
+  padding: 10px 15px;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 25px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s;
+}
+
+.owner-button img {
+  width: 30px;
+  height: 30px;
+  margin-right: 8px;
+}
+
+.owner-button:hover {
+  background: #107541;
+  transform: scale(1.1);
+}
+
+/* ======== OWNER PAGE STYLES ======== */
+.owner-profile {
+  text-align: center;
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.owner-photo,
+.house-photo {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 4px solid #3dc90a;
+  margin-bottom: 10px;
+}
+
+.house-photo {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  border-radius: 10px;
+}
+
+.owner-description {
+  font-size: 0.8rem;
+  font-family: 'Poppins', sans-serif;
+  color: #fbfbfb;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.owner-address {
+  font-size: 0.8rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: bold;
+  color: #c5c5c5;
+}
+
+h2,
+h3 {
+  color: #42f062;
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.maps-link {
+  display: inline-block;
+  color: #2fd07c;
+  font-weight: bold;
+  text-decoration: none;
+  margin-bottom: 15px;
+  transition: color 0.3s;
+  padding: 5px;
+  font-size: 0.8rem;
+}
+
+.maps-link:hover {
+  color: #074c28;
+  text-decoration: underline;
+}
+
+.contact-button {
+  display: inline-block;
+  background: #074c28;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  text-decoration: none;
+  margin-top: 10px;
+  font-weight: bold;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.contact-button:hover {
+  background: #107541;
+  transform: scale(1.1);
+}
