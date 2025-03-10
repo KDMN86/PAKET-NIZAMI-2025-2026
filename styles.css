@@ -135,6 +135,9 @@ h2 {
 .package-button:nth-child(6) {
   animation-delay: 1.2s;
 }
+.package-button:nth-child(7) {
+  animation-delay: 1.4s;
+}
 
 /* Efek Hover pada Tombol Paket */
 .package-button:hover {
