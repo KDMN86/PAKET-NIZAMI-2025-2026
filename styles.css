@@ -25,17 +25,17 @@ header {
 
 /* Header teks */
 header p {
-  font-size: 0.6rem;
-  font-family: 'Delius Unicase', cursive;
+  font-size: 1rem;
+  font-family: 'poppins', sans-serif;
   color: #ffffff;
-  width: 60%; /* Batasi lebar teks */
+  width: 80%; /* Batasi lebar teks */
   text-align: center;
   margin: 0 auto; /* Pusatkan teks dalam header */
 }
 
 h1 {
   font-size: 1.5rem;
-  font-family: 'poppins', cursive;
+  font-family: 'poppins', sans-serif;
   color: #fff; /* Warna teks */
   text-align: center;
 }
@@ -143,45 +143,23 @@ h2 {
   background: #2cee59;
 }
 
-.product-gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 10px;
-  padding: 20px;
-}
-
-.product-gallery img {
-  width: 100%;
-  border-radius: 8px;
-  border: 5px solid #818281;
-}
-
-/* Overlay untuk preview gambar */
-.preview-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  display: none; /* Sembunyikan awalnya */
+.full-screen-gallery {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  z-index: 1000;
+  width: 100vw;
+  height: 100vh;
+  overflow-y: auto;
+  background: black;
+  padding: 10px 0;
 }
 
-/* Gambar dalam preview */
-#preview-img {
-  max-width: 90%;
-  max-height: 90%;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
-  cursor: grab;
-  transition: transform 0.2s ease;
-}
-
-#preview-img:active {
-  cursor: grabbing;
+.full-screen-gallery img {
+  width: 100vw;
+  height: auto;
+  max-height: 100vh;
+  object-fit: contain;
+  margin-bottom: 10px;
 }
 
 /* Tombol close */
@@ -195,17 +173,16 @@ h2 {
 }
 
 footer {
-  font-size: 0.7rem;
-  font-family: 'Delius Unicase', cursive;
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
   color: #ffffff;
-  background: #222; /* Latar belakang gelap agar kontras */
-  padding: 15px;
+  width: fit-content;
   text-align: center;
-  width: 85%;
-  max-width: 600px; /* Atur lebar maksimal agar tidak terlalu panjang */
-  margin: 5px auto; /* Pusatkan footer */
+  padding: 5px;
+  margin: 15px auto; /* Pusatkan footer */
   border-radius: 10px;
   line-height: 1;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8); /* Efek bayangan */
 }
 
 /* Pisahkan teks menjadi dua bagian */
@@ -281,5 +258,5 @@ footer {
 
 .back-button:hover {
   background: #107541;
-  transform: scale(1.1);
+  transform: scale(1.5);
 }
