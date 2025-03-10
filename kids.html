@@ -9,22 +9,23 @@
   <body>
     <header>
       <h1>Paket KIDS</h1>
-      <p>Detail produk dari Paket KIDS yang tersedia untuk Anda.</p>
+      <p>Detail produk:</p>
     </header>
-
-    <section class="product">
-      <div class="product-gallery">
-        <img src="image/kids/kids1.jpg" alt="kids 1" class="zoomable" />
-        <img src="image/kids/kids2.jpg" alt="kids 2" class="zoomable" />
-        <img src="image/kids/kids3.jpg" alt="kids 3" class="zoomable" />
-        <img src="image/kids/kids4.jpg" alt="kids 4" class="zoomable" />
-      </div>
-
-      <!-- Overlay untuk Preview -->
-      <div id="image-preview" class="preview-overlay">
-        <span class="close-btn">&times;</span>
-        <img id="preview-img" />
-      </div>
+    <img
+      src="image/lampu.png"
+      class="decorative-image decor-top-left"
+      alt="Hiasan Kiri Atas"
+    />
+    <img
+      src="image/lampu.png"
+      class="decorative-image decor-bottom-right"
+      alt="Hiasan Kanan Bawah"
+    />
+    <section class="full-screen-gallery">
+      <img src="image/kids/kids1.jpg" alt="kids 1" />
+      <img src="image/kids/kids2.jpg" alt="kids 2" />
+      <img src="image/kids/kids3.jpg" alt="kids 3" />
+      <img src="image/kids/kids4.jpg" alt="kids 4" />
     </section>
 
     <footer>
@@ -39,7 +40,9 @@
       Join Now
     </a>
 
-    <button id="back-button" class="back-button">⬅ Kembali</button>
+    <!-- <button id="back-button" class="back-button">⬅ Kembali</button> -->
+
+    <a href="javascript:history.back()" class="back-button">Kembali</a>
 
     <script src="script.js"></script>
   </body>
