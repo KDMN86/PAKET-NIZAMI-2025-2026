@@ -9,32 +9,22 @@
   <body>
     <header>
       <h1>Paket MINGGUAN</h1>
-      <p>Detail produk dari Paket MINGGUAN yang tersedia untuk Anda.</p>
+      <p>Detail produk:</p>
     </header>
-    <section class="product">
-      <div class="product-gallery">
-        <img
-          src="image/mingguan/mingguan1.jpg"
-          alt="mingguan 1"
-          class="zoomable"
-        />
-        <img
-          src="image/mingguan/mingguan2.jpg"
-          alt="mingguan 2"
-          class="zoomable"
-        />
-        <img
-          src="image/mingguan/mingguan3.jpg"
-          alt="mingguan 3"
-          class="zoomable"
-        />
-      </div>
-
-      <!-- Overlay untuk Preview -->
-      <div id="image-preview" class="preview-overlay">
-        <span class="close-btn">&times;</span>
-        <img id="preview-img" />
-      </div>
+    <img
+      src="image/lampu.png"
+      class="decorative-image decor-top-left"
+      alt="Hiasan Kiri Atas"
+    />
+    <img
+      src="image/lampu.png"
+      class="decorative-image decor-bottom-right"
+      alt="Hiasan Kanan Bawah"
+    />
+    <section class="full-screen-gallery">
+      <img src="image/mingguan/mingguan1.jpg" alt="mingguan 1" />
+      <img src="image/mingguan/mingguan2.jpg" alt="mingguan 2" />
+      <img src="image/mingguan/mingguan3.jpg" alt="mingguan 3" />
     </section>
 
     <footer>
@@ -49,7 +39,9 @@
       Join Now
     </a>
 
-    <button id="back-button" class="back-button">⬅ Kembali</button>
+    <!-- <button id="back-button" class="back-button">⬅ Kembali</button> -->
+
+    <a href="javascript:history.back()" class="back-button">Kembali</a>
 
     <script src="script.js"></script>
   </body>
