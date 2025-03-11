@@ -391,7 +391,7 @@ h3 {
   width: 100%;
   aspect-ratio: 1 / 1; /* Bentuk segi empat */
   object-fit: cover;
-  /* border-radius: 8px; */
+
   cursor: pointer;
   transition: transform 0.3s ease;
 }
