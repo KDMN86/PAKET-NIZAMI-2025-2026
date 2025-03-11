@@ -372,3 +372,91 @@ h3 {
   background: #107541;
   transform: scale(1.1);
 }
+
+/* Galeri Produk */
+.gallery {
+  padding: 20px;
+  text-align: center;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  max-width: 900px;
+  margin: auto;
+}
+
+.gallery-item {
+  width: 100%;
+  aspect-ratio: 1 / 1; /* Bentuk segi empat */
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.gallery-item:hover {
+  transform: scale(1.05);
+}
+
+/* Overlay Preview */
+.preview-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 1000;
+}
+
+#preview-img {
+  max-width: 90%;
+  max-height: 80%;
+  border-radius: 10px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 30px;
+  font-size: 30px;
+  color: white;
+  cursor: pointer;
+}
+
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.prev-btn,
+.next-btn {
+  font-size: 30px;
+  color: white;
+  cursor: pointer;
+  padding: 20px;
+}
+
+/* Tombol kembali */
+.back-button {
+  display: block;
+  text-align: center;
+  margin: 20px auto;
+  padding: 10px 15px;
+  font-size: 14px;
+  background: #074c28;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  width: 100px;
+}
