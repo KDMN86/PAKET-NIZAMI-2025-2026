@@ -15,18 +15,17 @@ document.addEventListener('DOMContentLoaded', function () {
     if (index >= 0 && index < images.length) {
       previewImg.src = images[index].src;
       currentIndex = index;
-      previewOverlay.style.display = 'flex';
+      previewOverlay.classList.add('show');
+      requestAnimationFrame(() => (previewImg.style.transform = 'scale(1)'));
     }
   }
 
   images.forEach((img, index) => {
-    img.addEventListener('click', function () {
-      showImage(index);
-    });
+    img.addEventListener('click', () => showImage(index), { passive: true });
   });
 
-  closeBtn.addEventListener('click', function () {
-    previewOverlay.style.display = 'none';
+  closeBtn.addEventListener('click', () => {
+    previewOverlay.classList.remove('show');
   });
 
   prevBtn.addEventListener('click', function () {
@@ -37,9 +36,10 @@ document.addEventListener('DOMContentLoaded', function () {
     showImage(currentIndex + 1);
   });
 
-  previewOverlay.addEventListener('click', function (e) {
+  // Tutup preview dengan klik di luar gambar
+  previewOverlay.addEventListener('click', (e) => {
     if (e.target === previewOverlay) {
-      previewOverlay.style.display = 'none';
+      previewOverlay.classList.remove('show');
     }
   });
 
@@ -49,5 +49,12 @@ document.addEventListener('DOMContentLoaded', function () {
       if (e.key === 'ArrowRight') showImage(currentIndex + 1);
       if (e.key === 'Escape') previewOverlay.style.display = 'none';
     }
+  });
+
+  // Lazy Load Gambar
+  document.querySelectorAll('img[loading="lazy"]').forEach((img) => {
+    img.addEventListener('load', () => {
+      img.style.opacity = '1';
+    });
   });
 });
