@@ -25,10 +25,10 @@ header {
 
 /* Header teks */
 header p {
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-family: 'poppins', sans-serif;
   color: #ffffff;
-  width: 80%; /* Batasi lebar teks */
+  width: 75%; /* Batasi lebar teks */
   text-align: center;
   margin: 0 auto; /* Pusatkan teks dalam header */
 }
