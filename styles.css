@@ -248,15 +248,22 @@ footer {
   position: fixed;
   bottom: 20px;
   left: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 8px 12px;
   font-size: 12px;
+  font-weight: bold;
   color: white;
   background: #074c28;
   border: 1px solid #3dc90a;
-  border-radius: 5px;
+  width: 115px;
+  height: 50px;
+  border-radius: 25px;
   cursor: pointer;
   transition: background 0.3s, transform 0.2s;
   z-index: 999;
+  text-align: center;
 }
 
 .back-button:hover {
@@ -460,18 +467,4 @@ h3 {
   color: white;
   cursor: pointer;
   padding: 20px;
-}
-
-/* Tombol kembali */
-.back-button {
-  display: block;
-  text-align: center;
-  margin: 20px auto;
-  padding: 10px 15px;
-  font-size: 14px;
-  background: #074c28;
-  color: white;
-  text-decoration: none;
-  border-radius: 5px;
-  width: 100px;
 }
