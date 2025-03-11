@@ -375,14 +375,14 @@ h3 {
 
 /* Galeri Produk */
 .gallery {
-  padding: 20px;
+  padding: 5px;
   text-align: center;
 }
 
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 1px;
   max-width: 900px;
   margin: auto;
 }
