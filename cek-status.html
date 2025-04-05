@@ -4,69 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cek Status Peserta</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        padding: 20px;
-        background: #f4f4f4;
-      }
-      .container {
-        max-width: 400px;
-        background: white;
-        padding: 20px;
-        margin: auto;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      }
-      input,
-      select,
-      button {
-        width: 100%;
-        padding: 10px;
-        margin: 5px 0;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        font-size: 16px;
-      }
-      button {
-        background: #007bff;
-        color: white;
-        border: none;
-        cursor: pointer;
-      }
-      button:hover {
-        background: #0056b3;
-      }
-      .btn-reset {
-        background: #dc3545;
-      }
-      .btn-reset:hover {
-        background: #c82333;
-      }
-      .result {
-        margin-top: 20px;
-        padding: 15px;
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-        text-align: left;
-      }
-      .hidden {
-        display: none;
-      }
-      .result-item {
-        border-bottom: 1px solid #ddd;
-        padding: 10px 0;
-      }
-      .result-item:last-child {
-        border-bottom: none;
-      }
-      .label {
-        font-weight: bold;
-        color: #007bff;
-      }
-    </style>
+    <link rel="stylesheet" href="styles2.css" />
   </head>
   <body>
     <div class="container">
@@ -89,7 +27,7 @@
     <script>
       // Ganti dengan URL Web App Apps Script
       const API_URL =
-        'https://script.google.com/macros/s/AKfycbxj0w4oBzT_9FGInnL6LHqylWf5iRSlQTNlopZ-5wu92AebMAMBlGiLRzbmq_GLYkyx/exec';
+        'https://script.google.com/macros/s/AKfycbxW5DF6DqaG_6gjRz5ChqaempbSj8KbRqZW8M1ySMiUA9acqvE5fz5MZuLjCWtoLJLi/exec';
 
       function cekStatus() {
         let searchValue = document.getElementById('searchInput').value.trim();
@@ -100,6 +38,7 @@
           return;
         }
 
+        // Jika filter berdasarkan id, parameternya adalah "id"; jika grup, gunakan "group"
         let queryParam =
           filterType === 'id' ? `id=${searchValue}` : `group=${searchValue}`;
 
@@ -117,26 +56,56 @@
               .getElementById('resultContainer')
               .classList.remove('hidden');
           })
-          .catch((error) => console.error('Error:', error));
+          .catch((error) => {
+            console.error('Error:', error);
+            document.getElementById(
+              'resultContainer'
+            ).innerHTML = `<p style="color:red;">Terjadi kesalahan: ${error.message}</p>`;
+            document
+              .getElementById('resultContainer')
+              .classList.remove('hidden');
+          });
       }
 
       function tampilkanHasil(data) {
         let html = `<h3>Hasil Pencarian</h3>`;
         data.forEach((peserta) => {
+          let pesanBarang = '';
+          // Jika peserta memiliki setoranBarang dan setoranDilakukan >= setoranBarang
+          if (
+            peserta.setoranBarang &&
+            Number(peserta.setoranDilakukan) >= Number(peserta.setoranBarang)
+          ) {
+            pesanBarang = `<p style="color:green;font-weight:bold;">
+                            Selamat, Anda telah mencapai simpanan barang! 
+                            Setoran selanjutnya akan menambah ke tabungan uang Anda.
+                          </p>`;
+          }
           html += `
             <div class="result-item">
               <p><span class="label">No:</span> ${peserta.no}</p>
               <p><span class="label">ID Peserta:</span> ${peserta.idPeserta}</p>
               <p><span class="label">Nama:</span> ${peserta.nama}</p>
               <p><span class="label">Paket:</span> ${peserta.jenisPaket}</p>
-              <p><span class="label">Nilai Setoran:</span> ${peserta.nilaiSetoran}</p>
-              <p><span class="label">Total Setoran:</span> ${peserta.totalSetoran}X</p>
-              <p><span class="label">Setoran Masuk:</span> ${peserta.setoranDilakukan}X</p>
-              <p><span class="label">Sisa Setoran:</span> ${peserta.sisaSetoran}X</p>
+              <p><span class="label">Nilai Setoran:</span> ${
+                peserta.nilaiSetoran
+              }</p>
+              <p><span class="label">Total Setoran:</span> ${
+                peserta.totalSetoran
+              }X</p>
+              <p><span class="label">Setoran Masuk:</span> ${
+                peserta.setoranDilakukan
+              }X</p>
+              <p><span class="label">Sisa Setoran:</span> ${
+                peserta.sisaSetoran
+              }X</p>
+              <p><span class="label">Setoran Barang:</span> ${
+                peserta.setoranBarang || '0'
+              }X</p>
+              ${pesanBarang}
             </div>
           `;
         });
-
         document.getElementById('resultContainer').innerHTML = html;
       }
 
