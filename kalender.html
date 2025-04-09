@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kalender Setoran Peserta</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        background-color: #f2f2f2;
+        padding: 20px;
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .info {
+        max-width: 400px;
+        margin: 0 auto 20px;
+        text-align: center;
+        font-size: 1rem;
+      }
+      /* Kalender per bulan */
+      .bulan {
+        margin: 30px 0;
+      }
+      .judul-bulan {
+        font-size: 1.3em;
+        font-weight: bold;
+        color: green;
+        text-align: center;
+        margin-bottom: 10px;
+      }
+      table {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto 20px;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        width: 14.28%;
+        height: 40px;
+        text-align: center;
+        border: 1px solid #ccc;
+      }
+      th {
+        background-color: #eee;
+        color: black;
+        font-size: 0.9rem;
+      }
+      td {
+        font-size: 0.8rem;
+      }
+      .hijau {
+        background-color: green;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Kalender Setoran Peserta</h1>
+    <div class="info">
+      <p>Hari yang diwarnai hijau menandakan setoran sudah dilakukan.</p>
+    </div>
+    <div id="kalender-container"></div>
+
+    <script>
+      // Fungsi untuk mendapatkan parameter query dari URL
+      function getQueryParams() {
+        const params = {};
+        window.location.search
+          .substring(1)
+          .split('&')
+          .forEach((part) => {
+            if (!part) return;
+            const [key, value] = part.split('=');
+            params[decodeURIComponent(key)] = decodeURIComponent(value);
+          });
+        return params;
+      }
+
+      const params = getQueryParams();
+
+      // Ambil jumlah setoran yang sudah dilakukan; default 0
+      const jumlahSetoran = Number(params.jumlah) || 0;
+
+      // Ambil jenis paket
+      const paketParam = (params.paket || '').toLowerCase();
+
+      // Total hari: jika paket adalah 'mingguan', 'munggah 5000', atau 'munggah hemat' maka 300 hari,
+      // selain itu 330 hari.
+      const hariTotal =
+        paketParam === 'mingguan' ||
+        paketParam === 'munggah 5000' ||
+        paketParam === 'munggah hemat'
+          ? 300
+          : 330;
+
+      // Tanggal mulai kalender: 11 April 2025
+      const tanggalMulai = new Date('2025-04-11');
+      const container = document.getElementById('kalender-container');
+
+      // Variabel untuk men-track progress hari
+      let hariKe = 0;
+      let currentDate = new Date(tanggalMulai);
+
+      // Kita proses tiap bulan sampai hariTotal tercapai
+      while (hariKe < hariTotal) {
+        const bulanIni = currentDate.getMonth();
+        const tahunIni = currentDate.getFullYear();
+
+        // Buat judul bulan
+        const judul = document.createElement('div');
+        judul.className = 'judul-bulan';
+        judul.textContent = `${getNamaBulan(bulanIni)} ${tahunIni}`;
+
+        // Buat tabel dengan header nama hari
+        const tabel = document.createElement('table');
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        const hariIndo = ['Mg', 'Sn', 'Sl', 'Rb', 'Km', 'Jm', 'Sb'];
+        hariIndo.forEach((h) => {
+          const th = document.createElement('th');
+          th.textContent = h;
+          headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        tabel.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        let row = document.createElement('tr');
+
+        // Tentukan posisi hari pertama di bulan ini (dalam konteks tabel)
+        const firstDate = new Date(tahunIni, bulanIni, 1);
+        const firstDayIndex = firstDate.getDay(); // 0 = Minggu
+        // Tentukan offset (jika kalender diawali 11 April 2025, kita sesuaikan)
+        let offset = 0;
+        if (
+          firstDate.getFullYear() === tanggalMulai.getFullYear() &&
+          firstDate.getMonth() === tanggalMulai.getMonth()
+        ) {
+          // Jika bulan pertama dimulai dengan tanggal 11 (tidak selalu 1)
+          offset = currentDate.getDay();
+        } else {
+          offset = firstDayIndex;
+        }
+
+        // Kosongkan sel hingga mencapai hari pertama
+        for (let i = 0; i < offset; i++) {
+          const emptyCell = document.createElement('td');
+          row.appendChild(emptyCell);
+        }
+
+        // Loop untuk menghasilkan sel untuk setiap hari di bulan sampai pindah bulan atau mencapai total hari
+        while (currentDate.getMonth() === bulanIni && hariKe < hariTotal) {
+          const td = document.createElement('td');
+          td.textContent = currentDate.getDate();
+
+          // Tandai dengan warna hijau jika hari tersebut sudah termasuk setoran masuk
+          if (hariKe < jumlahSetoran) {
+            td.classList.add('hijau');
+          }
+          row.appendChild(td);
+
+          // Jika baris sudah penuh 7 kolom, tambah baris baru
+          if (row.children.length === 7) {
+            tbody.appendChild(row);
+            row = document.createElement('tr');
+          }
+
+          // Geser ke hari berikutnya
+          currentDate.setDate(currentDate.getDate() + 1);
+          hariKe++;
+        }
+
+        // Jika baris tidak penuh, tambahkan sel kosong pada akhir
+        if (row.children.length > 0) {
+          while (row.children.length < 7) {
+            row.appendChild(document.createElement('td'));
+          }
+          tbody.appendChild(row);
+        }
+
+        tabel.appendChild(tbody);
+
+        // Bungkus judul dan tabel ke dalam div bulan
+        const divBulan = document.createElement('div');
+        divBulan.className = 'bulan';
+        divBulan.appendChild(judul);
+        divBulan.appendChild(tabel);
+        container.appendChild(divBulan);
+      }
+
+      // Fungsi untuk mendapatkan nama bulan dalam bahasa Indonesia
+      function getNamaBulan(index) {
+        const namaBulan = [
+          'Januari',
+          'Februari',
+          'Maret',
+          'April',
+          'Mei',
+          'Juni',
+          'Juli',
+          'Agustus',
+          'September',
+          'Oktober',
+          'November',
+          'Desember',
+        ];
+        return namaBulan[index];
+      }
+    </script>
+  </body>
+</html>
