@@ -5,6 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cek Status Peserta</title>
     <link rel="stylesheet" href="styles2.css" />
+    <style>
+      /* Styling tambahan untuk hasil pencarian */
+      .result-item {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+      .result-item p {
+        margin: 6px 0;
+      }
+      .label {
+        font-weight: bold;
+      }
+      .hidden {
+        display: none;
+      }
+    </style>
   </head>
   <body>
     <div class="container">
@@ -20,50 +38,55 @@
       />
       <button onclick="cekStatus()">Cek Status</button>
       <button class="btn-reset" onclick="resetForm()">Reset</button>
-
       <div id="resultContainer" class="result hidden"></div>
     </div>
 
     <script>
-      // Ganti dengan URL Web App Apps Script
+      // Ganti dengan URL Web App Apps Script Anda
       const API_URL =
-        'https://script.google.com/macros/s/AKfycbxW5DF6DqaG_6gjRz5ChqaempbSj8KbRqZW8M1ySMiUA9acqvE5fz5MZuLjCWtoLJLi/exec';
+        'https://script.google.com/macros/s/AKfycbzBAk8v5BxFnd40_hVz7urROlVew0JIZB6iQ44wIWcqD1Fcgzi029CviLPTB-ggLFGZ/exec';
 
       function cekStatus() {
-        let searchValue = document.getElementById('searchInput').value.trim();
-        let filterType = document.getElementById('filterType').value;
+        const searchValue = document.getElementById('searchInput').value.trim();
+        const filterType = document.getElementById('filterType').value;
 
         if (!searchValue) {
           alert('Masukkan ID Peserta atau Grup ID!');
           return;
         }
 
-        // Jika filter berdasarkan id, parameternya adalah "id"; jika grup, gunakan "group"
-        let queryParam =
+        // Validasi: hanya huruf, angka, strip, underscore
+        const pattern = /^[a-zA-Z0-9_-]+$/;
+        if (!pattern.test(searchValue)) {
+          alert(
+            'Input hanya boleh mengandung huruf, angka, strip (-), dan underscore (_).'
+          );
+          return;
+        }
+
+        // Jika filter berdasarkan "id", parameter = id; jika "group", parameter = group
+        const queryParam =
           filterType === 'id' ? `id=${searchValue}` : `group=${searchValue}`;
+
+        const resultContainer = document.getElementById('resultContainer');
+        resultContainer.innerHTML = '<p>Loading...</p>';
+        resultContainer.classList.remove('hidden');
 
         fetch(`${API_URL}?${queryParam}`)
           .then((response) => response.json())
           .then((data) => {
             if (data.error) {
-              document.getElementById(
-                'resultContainer'
-              ).innerHTML = `<p style="color:red;">${data.error}</p>`;
+              resultContainer.innerHTML = `<p style="color:red;">${data.error}</p>`;
+            } else if (!Array.isArray(data) || data.length === 0) {
+              resultContainer.innerHTML = `<p>Tidak ada data ditemukan untuk pencarian ini.</p>`;
             } else {
               tampilkanHasil(data);
             }
-            document
-              .getElementById('resultContainer')
-              .classList.remove('hidden');
+            resultContainer.scrollIntoView({ behavior: 'smooth' });
           })
           .catch((error) => {
             console.error('Error:', error);
-            document.getElementById(
-              'resultContainer'
-            ).innerHTML = `<p style="color:red;">Terjadi kesalahan: ${error.message}</p>`;
-            document
-              .getElementById('resultContainer')
-              .classList.remove('hidden');
+            resultContainer.innerHTML = `<p style="color:red;">Terjadi kesalahan: ${error.message}</p>`;
           });
       }
 
@@ -71,7 +94,6 @@
         let html = `<h3>Hasil Pencarian</h3>`;
         data.forEach((peserta) => {
           let pesanBarang = '';
-          // Jika peserta memiliki setoranBarang dan setoranDilakukan >= setoranBarang
           if (
             peserta.setoranBarang &&
             Number(peserta.setoranDilakukan) >= Number(peserta.setoranBarang)
@@ -87,9 +109,12 @@
               <p><span class="label">ID Peserta:</span> ${peserta.idPeserta}</p>
               <p><span class="label">Nama:</span> ${peserta.nama}</p>
               <p><span class="label">Paket:</span> ${peserta.jenisPaket}</p>
-              <p><span class="label">Nilai Setoran:</span> ${
+              <p><span class="label">Nilai Setoran:</span> Rp ${
                 peserta.nilaiSetoran
               }</p>
+              <p><span class="label">Setoran Barang:</span> ${
+                peserta.setoranBarang || '0'
+              }X</p>
               <p><span class="label">Total Setoran:</span> ${
                 peserta.totalSetoran
               }X</p>
@@ -98,9 +123,6 @@
               }X</p>
               <p><span class="label">Sisa Setoran:</span> ${
                 peserta.sisaSetoran
-              }X</p>
-              <p><span class="label">Setoran Barang:</span> ${
-                peserta.setoranBarang || '0'
               }X</p>
               ${pesanBarang}
             </div>
