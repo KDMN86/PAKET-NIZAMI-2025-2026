@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kalkulator Mitra</title>
+    <style>
+      body {
+        font-family: 'Poppins', sans-serif;
+        padding: 20px;
+        background-color: #f9f9f9;
+      }
+      h2 {
+        text-align: center;
+      }
+      .input-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+      input,
+      button {
+        padding: 10px;
+        font-size: 16px;
+      }
+      .table-container {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: center;
+      }
+      th {
+        background-color: #007bff;
+        color: white;
+      }
+      tfoot td {
+        font-weight: bold;
+        background-color: #e0f7fa;
+      }
+      .total {
+        text-align: right;
+        margin-top: 20px;
+        font-size: 20px;
+      }
+      @media screen and (max-width: 600px) {
+        table,
+        thead,
+        tbody,
+        th,
+        td,
+        tr {
+          font-size: 14px;
+        }
+        .input-group {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        input,
+        button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Kalkulator Mitra</h2>
+    <div class="input-group">
+      <input type="text" id="grupInput" placeholder="Masukkan Grup ID" />
+      <button onclick="cariGrup()">Cek Data</button>
+      <button onclick="resetTabel()">Reset</button>
+    </div>
+    <div class="table-container">
+      <table id="resultTable" class="hidden">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama</th>
+            <th>Jenis Paket</th>
+            <th>Nilai Setoran (Rp)</th>
+            <th>Jumlah Setoran</th>
+            <th>Subtotal (Rp)</th>
+          </tr>
+        </thead>
+        <tbody id="resultBody"></tbody>
+        <tfoot>
+          <tr>
+            <td colspan="5">Total</td>
+            <td id="grandTotal">Rp 0</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <script>
+      const API_URL =
+        'https://script.google.com/macros/s/AKfycbzBAk8v5BxFnd40_hVz7urROlVew0JIZB6iQ44wIWcqD1Fcgzi029CviLPTB-ggLFGZ/exec';
+
+      function cariGrup() {
+        const grupID = document.getElementById('grupInput').value.trim();
+        if (!grupID) {
+          alert('Masukkan Grup ID!');
+          return;
+        }
+
+        const table = document.getElementById('resultTable');
+        const tbody = document.getElementById('resultBody');
+        const grandTotal = document.getElementById('grandTotal');
+
+        tbody.innerHTML = '<tr><td colspan="6">Loading...</td></tr>';
+        table.classList.remove('hidden');
+
+        fetch(`${API_URL}?group=${grupID}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error || data.length === 0) {
+              tbody.innerHTML = `<tr><td colspan="6" style="color:red;">${
+                data.error || 'Data tidak ditemukan'
+              }</td></tr>`;
+              grandTotal.textContent = 'Rp 0';
+              return;
+            }
+
+            let html = '';
+            data.forEach((peserta) => {
+              const nilai = Number(peserta.nilaiSetoran) || 0;
+              html += `
+              <tr>
+                <td>${peserta.no}</td>
+                <td>${peserta.nama}</td>
+                <td>${peserta.jenisPaket}</td>
+                <td>${nilai}</td>
+                <td>
+                  <input type="number" value="0" min="0" style="width: 60px" 
+                    oninput="hitungSubtotal(this, ${nilai})"/>
+                </td>
+                <td class="subtotal">Rp 0</td>
+              </tr>
+            `;
+            });
+            tbody.innerHTML = html;
+            hitungTotalSemua();
+          });
+      }
+
+      function hitungSubtotal(input, nilai) {
+        const row = input.closest('tr');
+        const jumlah = Number(input.value) || 0;
+        const subtotal = jumlah * nilai;
+        row.querySelector(
+          '.subtotal'
+        ).textContent = `Rp ${subtotal.toLocaleString()}`;
+        hitungTotalSemua();
+      }
+
+      function hitungTotalSemua() {
+        const subtotalCells = document.querySelectorAll('.subtotal');
+        let total = 0;
+        subtotalCells.forEach((cell) => {
+          const angka = Number(cell.textContent.replace(/[^\d]/g, '')) || 0;
+          total += angka;
+        });
+        document.getElementById(
+          'grandTotal'
+        ).textContent = `Rp ${total.toLocaleString()}`;
+      }
+
+      function resetTabel() {
+        const inputs = document.querySelectorAll('tbody input');
+        inputs.forEach((input) => {
+          input.value = 0;
+          input.dispatchEvent(new Event('input'));
+        });
+      }
+    </script>
+  </body>
+</html>
