@@ -98,6 +98,7 @@
             <th>Nama</th>
             <th>Jenis Paket</th>
             <th>Nilai Setoran (Rp)</th>
+            <th>Setoran Sebelumnya</th>
             <th>Jumlah Setoran</th>
             <th>Subtotal (Rp)</th>
           </tr>
@@ -105,7 +106,7 @@
         <tbody id="resultBody"></tbody>
         <tfoot>
           <tr>
-            <td colspan="5">Total</td>
+            <td colspan="6">Total</td>
             <td id="grandTotal">Rp 0</td>
           </tr>
         </tfoot>
@@ -127,14 +128,15 @@
         const tbody = document.getElementById('resultBody');
         const grandTotal = document.getElementById('grandTotal');
 
-        tbody.innerHTML = '<tr><td colspan="6">Loading...</td></tr>';
+        // Ubah colspan menjadi 7 (karena ada kolom tambahan "Setoran Masuk")
+        tbody.innerHTML = '<tr><td colspan="7">Loading...</td></tr>';
         table.classList.remove('hidden');
 
         fetch(`${API_URL}?group=${grupID}`)
           .then((res) => res.json())
           .then((data) => {
             if (data.error || data.length === 0) {
-              tbody.innerHTML = `<tr><td colspan="6" style="color:red;">${
+              tbody.innerHTML = `<tr><td colspan="7" style="color:red;">${
                 data.error || 'Data tidak ditemukan'
               }</td></tr>`;
               grandTotal.textContent = 'Rp 0';
@@ -144,22 +146,28 @@
             let html = '';
             data.forEach((peserta) => {
               const nilai = Number(peserta.nilaiSetoran) || 0;
+              // Tambahkan kolom untuk setoran yang sudah masuk (setoranDilakukan)
+              const setoranMasuk = Number(peserta.setoranDilakukan) || 0;
               html += `
-              <tr>
-                <td>${peserta.no}</td>
-                <td>${peserta.nama}</td>
-                <td>${peserta.jenisPaket}</td>
-                <td>${nilai}</td>
-                <td>
-                  <input type="number" value="0" min="0" style="width: 60px" 
-                    oninput="hitungSubtotal(this, ${nilai})"/>
-                </td>
-                <td class="subtotal">Rp 0</td>
-              </tr>
-            `;
+          <tr data-id="${peserta.idPeserta}">
+            <td>${peserta.no}</td>
+            <td>${peserta.nama}</td>
+            <td>${peserta.jenisPaket}</td>
+            <td>${nilai}</td>
+            <td>${setoranMasuk}</td>
+            <td>
+              <input type="number" value="0" min="0" style="width: 60px"
+                oninput="hitungSubtotal(this, ${nilai})"/>
+            </td>
+            <td class="subtotal">Rp 0</td>
+          </tr>
+        `;
             });
             tbody.innerHTML = html;
             hitungTotalSemua();
+          })
+          .catch((error) => {
+            console.error('Error:', error);
           });
       }
 
