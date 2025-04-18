@@ -164,62 +164,60 @@
         { name: 'Teh Pucuk 1 L', price: 400 },
       ];
 
+      // Jika URL punya ?group=… otomatis trigger cekStatus()
+      window.onload = () => {
+        const p = new URLSearchParams(location.search),
+          g = p.get('group');
+        if (g) {
+          document.getElementById('filterType').value = 'group';
+          document.getElementById('searchInput').value = g;
+          cekStatus();
+        }
+      };
+
       function cekStatus() {
-        const searchValue = document.getElementById('searchInput').value.trim();
-        const filterType = document.getElementById('filterType').value;
+        const ft = document.getElementById('filterType').value,
+          q = document.getElementById('searchInput').value.trim();
+        if (!q) return alert('Masukkan kata kunci!');
+        const param =
+            ft === 'id'
+              ? `?id=${encodeURIComponent(q)}`
+              : `?group=${encodeURIComponent(q)}`,
+          out = document.getElementById('resultContainer');
+        out.innerHTML = 'Loading…';
+        out.classList.remove('hidden');
 
-        if (!searchValue) {
-          alert('Masukkan ID Peserta atau Grup ID!');
-          return;
-        }
-
-        const pattern = /^[a-zA-Z0-9_-]+$/;
-        if (!pattern.test(searchValue)) {
-          alert(
-            'Input hanya boleh mengandung huruf, angka, strip (-), dan underscore (_).'
-          );
-          return;
-        }
-
-        const queryParam =
-          filterType === 'id' ? `id=${searchValue}` : `group=${searchValue}`;
-        const resultContainer = document.getElementById('resultContainer');
-        resultContainer.innerHTML = '<p>Loading...</p>';
-        resultContainer.classList.remove('hidden');
-
-        fetch(`${API_URL}?${queryParam}`)
-          .then((response) => response.json())
+        fetch(API_URL + param)
+          .then((r) => r.json())
           .then((data) => {
-            if (data.error) {
-              resultContainer.innerHTML = `<p style="color:red;">${data.error}</p>`;
-            } else if (!Array.isArray(data) || data.length === 0) {
-              resultContainer.innerHTML = `<p>Tidak ada data ditemukan untuk pencarian ini.</p>`;
-            } else {
-              tampilkanHasil(data);
-            }
-            resultContainer.scrollIntoView({ behavior: 'smooth' });
+            if (data.error)
+              out.innerHTML = `<p style="color:red">${data.error}</p>`;
+            else tampilkanHasil(data);
           })
-          .catch((error) => {
-            console.error('Error:', error);
-            resultContainer.innerHTML = `<p style="color:red;">Terjadi kesalahan: ${error.message}</p>`;
-          });
+          .catch(
+            (err) =>
+              (out.innerHTML = `<p style="color:red">Error: ${err.message}</p>`)
+          );
       }
 
       function tampilkanHasil(data) {
         let html = `<h3>Hasil Pencarian</h3>`;
 
         data.forEach((peserta) => {
+          // 1) Pesan hijau jika setoran barang terpenuhi
           let pesanBarang = '';
           if (
             peserta.setoranBarang &&
             Number(peserta.setoranDilakukan) >= Number(peserta.setoranBarang)
           ) {
-            pesanBarang = `<p style="color:green;font-weight:bold;">
-              Selamat, Anda telah mencapai simpanan barang! 
-              Setoran selanjutnya akan menambah ke tabungan uang Anda.
-            </p>`;
+            pesanBarang = `
+        <p style="color:green;font-weight:bold;">
+          Selamat, Anda telah mencapai simpanan barang! 
+          Setoran selanjutnya akan menambah ke tabungan uang Anda.
+        </p>`;
           }
 
+          // 2) Rincian harga untuk paket Mingguan
           let rincianBarangHTML = '';
           if (
             peserta.jenisPaket &&
@@ -228,7 +226,9 @@
           ) {
             const items = peserta.setoranBarang.split(',');
             let totalRincian = 0;
-            rincianBarangHTML += `<div style="margin-top:10px;"><strong>Rincian Harga Barang:</strong><br/>`;
+            rincianBarangHTML = `
+        <div style="margin-top:10px;">
+          <strong>Rincian Harga Barang:</strong><br/>`;
             items.forEach((itemStr, idx) => {
               const [nama, qtyStr] = itemStr.split('x').map((s) => s.trim());
               const jumlah = Number(qtyStr);
@@ -238,44 +238,54 @@
               if (barang && !isNaN(jumlah)) {
                 const subtotal = barang.price * jumlah;
                 totalRincian += subtotal;
-                rincianBarangHTML += `${
-                  idx + 1
-                }. ${nama} x${jumlah} = Rp ${subtotal.toLocaleString()}<br/>`;
+                rincianBarangHTML += `
+            ${
+              idx + 1
+            }. ${nama} x${jumlah} = Rp ${subtotal.toLocaleString()}<br/>`;
               }
             });
-            rincianBarangHTML += `<strong>Total Barang:</strong> Rp ${totalRincian.toLocaleString()}</div>`;
+            rincianBarangHTML += `
+          <strong>Total Barang:</strong> Rp ${totalRincian.toLocaleString()}
+        </div>`;
           }
 
-          html += `
-          <div class="result-item">
-            <p><span class="label">No:</span> ${peserta.no}</p>
-            <p><span class="label">ID Peserta:</span> ${peserta.idPeserta}</p>
-            <p><span class="label">Nama:</span> ${peserta.nama}</p>
-            <p><span class="label">Paket:</span> ${peserta.jenisPaket}</p>
-            <p><span class="label">Nilai Setoran:</span> Rp ${peserta.nilaiSetoran}</p>
-            ${rincianBarangHTML}
-            <p><span class="label">Total Setoran:</span> ${peserta.totalSetoran}X</p>
-            <p><span class="label">Setoran Masuk:</span> ${peserta.setoranDilakukan}X</p>
-            <p><span class="label">Sisa Setoran:</span> ${peserta.sisaSetoran}X</p>
-            ${pesanBarang}
-          </div>
-        `;
-        });
+          // 3) Tombol “Lihat Kalender” hanya untuk paket non‑Mingguan
+          let tombolKalender = '';
+          if (
+            peserta.jenisPaket &&
+            peserta.jenisPaket.toLowerCase() !== 'mingguan'
+          ) {
+            const jumlah = encodeURIComponent(peserta.setoranDilakukan);
+            const paket = encodeURIComponent(peserta.jenisPaket);
+            const id = encodeURIComponent(peserta.idPeserta);
+            const nama = encodeURIComponent(peserta.nama);
+            const grup = encodeURIComponent(peserta.grupID || '');
 
-        if (
-          data[0].jenisPaket &&
-          data[0].jenisPaket.toLowerCase() !== 'mingguan'
-        ) {
-          const jumlah = data[0].setoranDilakukan;
-          const paket = data[0].jenisPaket;
+            tombolKalender = `
+    <button
+      class="btn-kalender"
+      onclick="window.location.href=
+        'kalender.html?jumlah=${jumlah}&paket=${paket}&id=${id}&nama=${nama}&grupID=${grup}'">
+      Lihat Kalender Setoran
+    </button>`;
+          }
+
+          // 4) Bangun HTML kartu peserta
           html += `
-          <button class="btn-kalender" onclick="window.location.href='kalender.html?jumlah=${jumlah}&paket=${encodeURIComponent(
-            paket
-          )}'">
-            Lihat Kalender Setoran
-          </button>
-        `;
-        }
+      <div class="result-item">
+        <p><span class="label">No:</span> ${peserta.no}</p>
+        <p><span class="label">ID Peserta:</span> ${peserta.idPeserta}</p>
+        <p><span class="label">Nama:</span> ${peserta.nama}</p>
+        <p><span class="label">Paket:</span> ${peserta.jenisPaket}</p>
+        <p><span class="label">Nilai Setoran:</span> Rp ${peserta.nilaiSetoran}</p>
+        ${rincianBarangHTML}
+        <p><span class="label">Total Setoran:</span> ${peserta.totalSetoran}X</p>
+        <p><span class="label">Setoran Masuk:</span> ${peserta.setoranDilakukan}X</p>
+        <p><span class="label">Sisa Setoran:</span> ${peserta.sisaSetoran}X</p>
+        ${pesanBarang}
+        ${tombolKalender}
+      </div>`;
+        });
 
         document.getElementById('resultContainer').innerHTML = html;
       }
