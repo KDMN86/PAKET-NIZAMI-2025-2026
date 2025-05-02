@@ -75,6 +75,15 @@
       .subtotal {
         font-weight: bold;
       }
+
+      .save-jpg {
+        background-color: #2a2a2a;
+        color: #a0e946;
+        border: 1px solid #4a5245;
+        padding: 8px;
+        text-align: center;
+      }
+
       @media screen and (max-width: 600px) {
         table,
         thead,
@@ -102,7 +111,6 @@
       <input type="text" id="grupInput" placeholder="Masukkan Grup ID" />
       <button onclick="cariGrup()">Cek Data</button>
       <button onclick="resetTabel()">Reset</button>
-      <button onclick="simpanSebagaiGambar()">Simpan JPG</button>
     </div>
 
     <div id="captureArea">
@@ -129,6 +137,10 @@
           </tfoot>
         </table>
       </div>
+    </div>
+
+    <div class="save-jpg">
+      <button onclick="simpanSebagaiGambar()">Simpan JPG</button>
     </div>
 
     <script>
