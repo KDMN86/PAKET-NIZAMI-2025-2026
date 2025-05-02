@@ -15,6 +15,12 @@
         text-align: center;
         color: #f0f0f0;
       }
+      #dateDisplay {
+        text-align: center;
+        margin-bottom: 10px;
+        font-size: 1rem;
+        color: #ccc;
+      }
       .input-group {
         display: flex;
         flex-wrap: wrap;
@@ -25,43 +31,49 @@
       input,
       button {
         padding: 10px;
-        font-size: 16px;
-        background-color: #222;
+        font-size: 0.8rem;
+        background-color: #333;
         color: #f0f0f0;
-        border: 1px solid #444;
+        border: 1px solid #555;
         border-radius: 6px;
       }
       button:hover {
-        background-color: #333;
+        background-color: #444;
+      }
+      #captureArea {
+        background-color: #1a1a1a;
+        padding: 10px;
+        border-radius: 6px;
       }
       .table-container {
-        overflow-x: auto;
+        overflow: auto;
       }
       table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 20px;
-      }
-      th,
-      td {
-        border: 1px solid #555;
-        padding: 8px;
-        text-align: center;
-        color: #f0f0f0;
+        margin-top: 10px;
       }
       th {
         background-color: #007bff;
-        color: white;
+        color: #fff;
+        padding: 12px;
+        font-size: 0.7rem;
+      }
+      td {
+        background-color: #2a2a2a;
+        color: #f0f0f0;
+        border: 1px solid #444;
+        padding: 8px;
+        text-align: center;
       }
       tfoot td {
         font-weight: bold;
         background-color: #333;
         color: #fff;
+        padding: 12px;
       }
-      .total {
-        text-align: right;
-        margin-top: 20px;
-        font-size: 20px;
+      .subtotal {
+        font-weight: bold;
       }
       @media screen and (max-width: 600px) {
         table,
@@ -82,6 +94,7 @@
         }
       }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   </head>
   <body>
     <h2>Kalkulator Mitra</h2>
@@ -89,31 +102,47 @@
       <input type="text" id="grupInput" placeholder="Masukkan Grup ID" />
       <button onclick="cariGrup()">Cek Data</button>
       <button onclick="resetTabel()">Reset</button>
+      <button onclick="simpanSebagaiGambar()">Simpan JPG</button>
     </div>
-    <div class="table-container">
-      <table id="resultTable" class="hidden">
-        <thead>
-          <tr>
-            <th>No</th>
-            <th>Nama</th>
-            <th>Jenis Paket</th>
-            <th>Nilai Setoran (Rp)</th>
-            <th>Setoran Sebelumnya</th>
-            <th>Jumlah Setoran</th>
-            <th>Subtotal (Rp)</th>
-          </tr>
-        </thead>
-        <tbody id="resultBody"></tbody>
-        <tfoot>
-          <tr>
-            <td colspan="6">Total</td>
-            <td id="grandTotal">Rp 0</td>
-          </tr>
-        </tfoot>
-      </table>
+
+    <div id="captureArea">
+      <div id="dateDisplay"></div>
+      <div class="table-container">
+        <table id="resultTable" class="hidden">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Nama</th>
+              <th>Jenis Paket</th>
+              <th>Nilai Setoran (Rp)</th>
+              <th>Setoran Sebelumnya</th>
+              <th>Jumlah Setoran</th>
+              <th>Subtotal (Rp)</th>
+            </tr>
+          </thead>
+          <tbody id="resultBody"></tbody>
+          <tfoot>
+            <tr>
+              <td colspan="6">Total</td>
+              <td id="grandTotal">Rp 0</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
     </div>
 
     <script>
+      // Tampilkan tanggal hari ini
+      const dateEl = document.getElementById('dateDisplay');
+      const today = new Date();
+      dateEl.textContent =
+        'Tanggal: ' +
+        today.toLocaleDateString('id-ID', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric',
+        });
+
       const API_URL =
         'https://script.google.com/macros/s/AKfycbzBAk8v5BxFnd40_hVz7urROlVew0JIZB6iQ44wIWcqD1Fcgzi029CviLPTB-ggLFGZ/exec';
 
@@ -128,7 +157,6 @@
         const tbody = document.getElementById('resultBody');
         const grandTotal = document.getElementById('grandTotal');
 
-        // Ubah colspan menjadi 7 (karena ada kolom tambahan "Setoran Masuk")
         tbody.innerHTML = '<tr><td colspan="7">Loading...</td></tr>';
         table.classList.remove('hidden');
 
@@ -146,18 +174,16 @@
             let html = '';
             data.forEach((peserta) => {
               const nilai = Number(peserta.nilaiSetoran) || 0;
-              // Tambahkan kolom untuk setoran yang sudah masuk (setoranDilakukan)
               const setoranMasuk = Number(peserta.setoranDilakukan) || 0;
               html += `
           <tr data-id="${peserta.idPeserta}">
             <td>${peserta.no}</td>
             <td>${peserta.nama}</td>
             <td>${peserta.jenisPaket}</td>
-            <td>${nilai}</td>
-            <td>${setoranMasuk}</td>
+            <td>${nilai.toLocaleString()}</td>
+            <td>${setoranMasuk.toLocaleString()}</td>
             <td>
-              <input type="number" value="0" min="0" style="width: 60px"
-                oninput="hitungSubtotal(this, ${nilai})"/>
+              <input type="number" value="0" min="0" style="width:60px" oninput="hitungSubtotal(this, ${nilai})"/>
             </td>
             <td class="subtotal">Rp 0</td>
           </tr>
@@ -166,9 +192,7 @@
             tbody.innerHTML = html;
             hitungTotalSemua();
           })
-          .catch((error) => {
-            console.error('Error:', error);
-          });
+          .catch((error) => console.error('Error:', error));
       }
 
       function hitungSubtotal(input, nilai) {
@@ -182,11 +206,9 @@
       }
 
       function hitungTotalSemua() {
-        const subtotalCells = document.querySelectorAll('.subtotal');
         let total = 0;
-        subtotalCells.forEach((cell) => {
-          const angka = Number(cell.textContent.replace(/[^\d]/g, '')) || 0;
-          total += angka;
+        document.querySelectorAll('.subtotal').forEach((cell) => {
+          total += Number(cell.textContent.replace(/[^\d]/g, ''));
         });
         document.getElementById(
           'grandTotal'
@@ -194,10 +216,32 @@
       }
 
       function resetTabel() {
-        const inputs = document.querySelectorAll('tbody input');
-        inputs.forEach((input) => {
+        document.querySelectorAll('tbody input').forEach((input) => {
           input.value = 0;
           input.dispatchEvent(new Event('input'));
+        });
+      }
+
+      function simpanSebagaiGambar() {
+        const area = document.getElementById('captureArea');
+        // pastikan scroll semua muncul
+        const table = area.querySelector('table');
+        // hapus batasan tinggi pada container
+        const cont = area.querySelector('.table-container');
+        cont.style.height = table.scrollHeight + 'px';
+        cont.style.overflow = 'visible';
+        area.style.height = cont.scrollHeight + dateEl.offsetHeight + 'px';
+        area.style.overflow = 'visible';
+
+        html2canvas(area, { scale: 3, useCORS: true }).then((canvas) => {
+          const link = document.createElement('a');
+          link.download = `kalkulator-mitra-${today.getTime()}.jpg`;
+          link.href = canvas.toDataURL('image/jpeg', 0.9);
+          link.click();
+          // kembalikan
+          cont.style.height = '';
+          cont.style.overflow = '';
+          area.style.height = '';
         });
       }
     </script>
