@@ -224,25 +224,43 @@
 
       function simpanSebagaiGambar() {
         const area = document.getElementById('captureArea');
-        // pastikan scroll semua muncul
-        const table = area.querySelector('table');
-        // hapus batasan tinggi pada container
-        const cont = area.querySelector('.table-container');
-        cont.style.height = table.scrollHeight + 'px';
-        cont.style.overflow = 'visible';
-        area.style.height = cont.scrollHeight + dateEl.offsetHeight + 'px';
-        area.style.overflow = 'visible';
-
-        html2canvas(area, { scale: 3, useCORS: true }).then((canvas) => {
-          const link = document.createElement('a');
-          link.download = `kalkulator-mitra-${today.getTime()}.jpg`;
-          link.href = canvas.toDataURL('image/jpeg', 0.9);
-          link.click();
-          // kembalikan
-          cont.style.height = '';
-          cont.style.overflow = '';
-          area.style.height = '';
+        // clone area agar original tidak diubah
+        const clone = area.cloneNode(true);
+        // filter hanya baris dengan setoran > 0
+        clone.querySelectorAll('tbody tr').forEach((row) => {
+          const input = row.querySelector('input');
+          if (!input || Number(input.value) <= 0) row.remove();
         });
+        if (clone.querySelectorAll('tbody tr').length === 0) {
+          alert('Tidak ada peserta dengan setoran!');
+          return;
+        }
+        // style input agar angka kontras
+        clone.querySelectorAll('input').forEach((input) => {
+          input.style.backgroundColor = '#fff';
+          input.style.color = '#000';
+          input.style.border = '1px solid #888';
+          input.style.width = '60px';
+          input.style.fontWeight = 'bold';
+        });
+        // siapkan clone di DOM agar html2canvas bisa render styles
+        clone.style.position = 'absolute';
+        clone.style.top = '-9999px';
+        clone.style.left = '-9999px';
+        document.body.appendChild(clone);
+
+        html2canvas(clone, { scale: window.devicePixelRatio * 2 })
+          .then((canvas) => {
+            const link = document.createElement('a');
+            link.download = `kalkulator-mitra-${Date.now()}.jpg`;
+            link.href = canvas.toDataURL('image/jpeg', 0.9);
+            link.click();
+            document.body.removeChild(clone);
+          })
+          .catch((err) => {
+            console.error(err);
+            document.body.removeChild(clone);
+          });
       }
     </script>
   </body>
